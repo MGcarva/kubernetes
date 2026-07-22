@@ -1,0 +1,30 @@
+name: Pipeline CI/CD DevOps
+
+# El pipeline se activará automáticamente cada vez que hagas "push" a la rama principal
+on:
+  push:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest # GitHub nos presta una máquina Linux virtual gratis
+
+    steps:
+    # 1. Copiar tu código dentro de la máquina virtual de GitHub
+    - name: Descargar código del repositorio
+      uses: actions/checkout@v4
+
+    # 2. Iniciar sesión de forma segura en Docker Hub usando tus secretos
+    - name: Iniciar sesión en Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    # 3. Construir la imagen de Docker y subirla automáticamente a tu nube
+    - name: Construir y Subir Imagen Docker
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: gonzalo8484/mi-web-devops:latest
